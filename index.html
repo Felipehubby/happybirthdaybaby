@@ -29,7 +29,7 @@
   .sunset{position:absolute;inset:0;opacity:0;background:linear-gradient(180deg, rgba(255,187,102,0.05), rgba(122,11,11,0.25));mix-blend-mode:screen;transition:opacity .8s;}
   .sunset.active{opacity:1;}
   /* content */
-  .content{position:relative;z-index:4;padding:44px;color:var(--text);display:flex;flex-direction:column;gap:18px;}
+  .content{position:relative;z-index:4;padding:44px;color:var(--text);display:flex;flex-direction:column;gap:18px; overflow: hidden;}
   h1{margin:0;font-size:28px;letter-spacing:0.4px;color:var(--gold);text-shadow:0 2px 10px rgba(0,0,0,0.6);}
   .subtitle{font-size:14px;color:rgba(255,255,255,0.8);}
   .card-inner{
@@ -41,11 +41,34 @@
       flex:1;
       display:flex;
       flex-direction:column;
-      /* CORREÇÃO APLICADA: Usa space-between para garantir que os botões fiquem no final da carta. */
-      justify-content:space-between;
+      justify-content:space-between; /* Mantém o rodapé no lugar */
+      overflow-y: auto; /* Permite rolar se o conteúdo for muito grande */
   }
-  .paragraph{opacity:0;transform:translateY(10px);transition:all .9s cubic-bezier(.2,.9,.2,1);line-height:1.6;color:#fff9f6;font-size:18px;}
-  .paragraph.visible{opacity:1;transform:none;}
+
+  /* --- INÍCIO DA CORREÇÃO --- */
+  .paragraph {
+      opacity: 0;
+      transform: translateY(10px);
+      line-height: 1.6;
+      color: #fff9f6;
+      font-size: 18px;
+      
+      /* CORREÇÃO: Colapsa o parágrafo quando escondido para não ocupar espaço */
+      max-height: 0;
+      overflow: hidden;
+      margin: 0; /* Remove margem quando escondido */
+      transition: opacity .6s ease-out, transform .6s ease-out, max-height .8s ease-out, margin .6s ease-out;
+  }
+  .paragraph.visible {
+      opacity: 1;
+      transform: none;
+      
+      /* CORREÇÃO: Expande o parágrafo para uma altura máxima */
+      max-height: 500px; /* (Altura arbitrária grande o suficiente para o texto) */
+      margin: 16px 0; /* (Adiciona margem de volta quando visível) */
+  }
+  /* --- FIM DA CORREÇÃO --- */
+
   .small{font-size:14px;color:rgba(255,255,255,0.76);margin-top:12px}
   .controls{display:flex;gap:12px;align-items:center;margin-top:18px}
   .btn{background:var(--gold);color:#3b0707;padding:10px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(212,175,55,0.14);}
@@ -73,18 +96,23 @@
       <div class="subtitle">A letter from Felipe — piano & soft animation</div>
     </div>
     <div class="card-inner" id="cardInner">
-      <p class="paragraph" id="p0"><strong>I decided to write you a letter</strong> since you didn’t let me send you any gifts!! But next year you’ll be with me, and I’ll try to give you the best birthday of your life 😏😘</p>
-      <p class="paragraph" id="p1"><strong>Today is your birthday,</strong> but the one who truly got the gift on November 10th, 1993, was me — because from the day you were born, you were destined to find me somewhere along life’s path. And this year, it finally happened.</p>
-      <p class="paragraph" id="p2"><strong>I’m so happy to celebrate this special day with you,</strong> because it’s the day my sweet love came into the world — the day that gave my life meaning. We’ll have many more of your birthdays to celebrate together, and even though I can’t be with you in person today, I’ll always be there in your heart — today and every day.</p>
-      <p class="paragraph" id="p3"><strong>Once again, happy birthday, my baby 💙</strong><br>Enjoy your day — I love you so much!<br>Today is your birthday, but I’m the one who truly got the greatest gift when I met you. 💙</p>
-      <div class="small">Click the button below when you're ready to reveal the final message in Polish.</div>
-      <div class="controls">
-        <button class="btn" id="revealBtn">Reveal next</button>
-        <button class="btn secondary" id="replayBtn">Play again</button>
+      <div>
+        <p class="paragraph" id="p0"><strong>I decided to write you a letter</strong> since you didn’t let me send you any gifts!! But next year you’ll be with me, and I’ll try to give you the best birthday of your life 😏😘</p>
+        <p class="paragraph" id="p1"><strong>Today is your birthday,</strong> but the one who truly got the gift on November 10th, 1993, was me — because from the day you were born, you were destined to find me somewhere along life’s path. And this year, it finally happened.</p>
+        <p class="paragraph" id="p2"><strong>I’m so happy to celebrate this special day with you,</strong> because it’s the day my sweet love came into the world — the day that gave my life meaning. We’ll have many more of your birthdays to celebrate together, and even though I can’t be with you in person today, I’ll always be there in your heart — today and every day.</p>
+        <p class="paragraph" id="p3"><strong>Once again, happy birthday, my baby 💙</strong><br>Enjoy your day — I love you so much!<br>Today is your birthday, but I’m the one who truly got the greatest gift when I met you. 💙</p>
       </div>
-      <div class="footer">
-        <div class="credit">With love, your hubby, Felipe 😘💙</div>
-        <div></div>
+
+      <div>
+        <div class="small">Click the button below when you're ready to reveal the final message in Polish.</div>
+        <div class="controls">
+          <button class="btn" id="revealBtn">Reveal next</button>
+          <button class="btn secondary" id="replayBtn">Play again</button>
+        </div>
+        <div class="footer">
+          <div class="credit">With love, your hubby, Felipe 😘💙</div>
+          <div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -201,7 +229,7 @@ document.getElementById('playOverlay').addEventListener('click',()=>{
   document.getElementById('playOverlay').classList.add('hidden');
   if(!audioCtx) startAudio();
   
-  // CORREÇÃO (JS): Chama a revelação imediatamente para que o primeiro parágrafo apareça.
+  // Chama a revelação imediatamente para que o primeiro parágrafo apareça.
   revealNext();
 });
 
@@ -251,5 +279,4 @@ document.getElementById('finalBtn').addEventListener('click', ()=>{
 makeHearts();
 </script>
 </body>
-
 </html>
